@@ -1,5 +1,6 @@
 package africa.sendbyte;
 
+import africa.sendbyte.apikeys.ApiKeys;
 import africa.sendbyte.domains.Domains;
 import africa.sendbyte.emails.Emails;
 import africa.sendbyte.templates.Templates;
@@ -38,6 +39,7 @@ public final class SendByteClient implements AutoCloseable {
     private final Domains domains;
     private final Templates templates;
     private final Webhooks webhooks;
+    private final ApiKeys apiKeys;
 
     /** Create a client with the given API key and default configuration. */
     public SendByteClient(String apiKey) {
@@ -60,6 +62,7 @@ public final class SendByteClient implements AutoCloseable {
         this.domains = new Domains(executor);
         this.templates = new Templates(executor);
         this.webhooks = new Webhooks(executor);
+        this.apiKeys = new ApiKeys(executor);
     }
 
     /** Access the Emails resource: send, retrieve, and list transactional emails. */
@@ -80,6 +83,11 @@ public final class SendByteClient implements AutoCloseable {
     /** Access the Webhooks resource: manage endpoints, inspect deliveries, and replay them. */
     public Webhooks webhooks() {
         return webhooks;
+    }
+
+    /** Access the API Keys resource: create, list, and revoke scoped keys. */
+    public ApiKeys apiKeys() {
+        return apiKeys;
     }
 
     @Override

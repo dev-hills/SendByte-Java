@@ -8,7 +8,7 @@ The Java SDK for the [SendByte](https://www.sendbyte.africa) transactional email
 - Typed exceptions mapped from the API's machine-readable error codes
 - Built-in webhook signature verification
 
-> Current coverage: the **Emails** resource (send, retrieve, list), the **Domains** resource (register, retrieve, list, verify), the **Templates** resource (create, retrieve, list, update, delete, render, preview), the **Webhooks** resource (manage endpoints, deliveries, replay) plus signature verification. Only **API keys** remain to complete full API coverage.
+> Full API coverage: **Emails** (send, retrieve, list), **Domains** (register, retrieve, list, verify), **Templates** (create, retrieve, list, update, delete, render, preview), **Webhooks** (manage endpoints, deliveries, replay) with signature verification, and **API keys** (create, list, revoke).
 
 ## Installation
 
@@ -269,6 +269,25 @@ try {
 | `RateLimitException` | `rate_limit_exceeded` | 429 |
 | `InternalServerException` | `internal_error` | 500 |
 | `SendByteConnectionException` | — | (transport failure) |
+
+## API keys
+
+Create scoped keys, list active keys, and revoke them. These operations require a `full_access` key. The full key value is returned **once** on create.
+
+```java
+import africa.sendbyte.apikeys.ApiKey;
+import africa.sendbyte.apikeys.KeyScope;
+import africa.sendbyte.apikeys.KeyMode;
+
+ApiKey key = client.apiKeys().create("Production backend", KeyScope.SEND_ONLY, KeyMode.LIVE);
+System.out.println(key.getKey());   // sk_live_... — shown once, store it now
+
+client.apiKeys().list().getData()
+        .forEach(k -> System.out.printf("%s  %s  %s%n", k.getPrefix(), k.scope(), k.mode()));
+
+// A key cannot revoke itself — use a separate full_access key.
+client.apiKeys().revoke("key_...");
+```
 
 ## Webhooks
 

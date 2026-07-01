@@ -18,7 +18,7 @@ The Java SDK for the [SendByte](https://www.sendbyte.africa) transactional email
 
 ```xml
 <dependency>
-    <groupId>africa.sendbyte</groupId>
+    <groupId>io.github.dev-hills</groupId>
     <artifactId>sendbyte-java</artifactId>
     <version>0.1.0</version>
 </dependency>
@@ -27,7 +27,7 @@ The Java SDK for the [SendByte](https://www.sendbyte.africa) transactional email
 ### Gradle
 
 ```groovy
-implementation 'africa.sendbyte:sendbyte-java:0.1.0'
+implementation 'io.github.dev-hills:sendbyte-java:0.1.0'
 ```
 
 ## Quickstart

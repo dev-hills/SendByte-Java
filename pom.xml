@@ -4,21 +4,37 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>africa.sendbyte</groupId>
+    <groupId>io.github.dev-hills</groupId>
     <artifactId>sendbyte-java</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>SendByte Java SDK</name>
-    <description>Official Java SDK for the SendByte transactional email API.</description>
-    <url>https://docs.sendbyte.africa</url>
+    <description>Java SDK for the SendByte transactional email API.</description>
+    <url>https://github.com/dev-hills/SendByte-Java</url>
 
     <licenses>
         <license>
             <name>MIT License</name>
             <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <id>dev-hills</id>
+            <name>dev-hills</name>
+            <url>https://github.com/dev-hills</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/dev-hills/SendByte-Java.git</connection>
+        <developerConnection>scm:git:git@github.com:dev-hills/SendByte-Java.git</developerConnection>
+        <url>https://github.com/dev-hills/SendByte-Java</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -63,4 +79,82 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!--
+          Activate with `mvn -Prelease deploy` to publish to Maven Central.
+          Requires a Central Portal token (server id "central") and a GPG key.
+          See RELEASING.md for the full walkthrough. Normal `mvn test` is unaffected.
+        -->
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- Attach the sources jar -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Attach the javadoc jar -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.7.0</version>
+                        <configuration>
+                            <source>8</source>
+                            <doclint>none</doclint>
+                            <quiet>true</quiet>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Sign all artifacts with GPG -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Publish to the Sonatype Central Portal -->
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.6.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                            <waitUntil>published</waitUntil>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

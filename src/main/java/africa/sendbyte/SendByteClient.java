@@ -2,6 +2,7 @@ package africa.sendbyte;
 
 import africa.sendbyte.domains.Domains;
 import africa.sendbyte.emails.Emails;
+import africa.sendbyte.templates.Templates;
 import africa.sendbyte.http.HttpTransport;
 import africa.sendbyte.http.OkHttpTransport;
 import africa.sendbyte.http.RequestExecutor;
@@ -34,6 +35,7 @@ public final class SendByteClient implements AutoCloseable {
     private final HttpTransport transport;
     private final Emails emails;
     private final Domains domains;
+    private final Templates templates;
 
     /** Create a client with the given API key and default configuration. */
     public SendByteClient(String apiKey) {
@@ -54,6 +56,7 @@ public final class SendByteClient implements AutoCloseable {
         RequestExecutor executor = new RequestExecutor(transport);
         this.emails = new Emails(executor);
         this.domains = new Domains(executor);
+        this.templates = new Templates(executor);
     }
 
     /** Access the Emails resource: send, retrieve, and list transactional emails. */
@@ -64,6 +67,11 @@ public final class SendByteClient implements AutoCloseable {
     /** Access the Domains resource: register, retrieve, list, and verify sending domains. */
     public Domains domains() {
         return domains;
+    }
+
+    /** Access the Templates resource: manage and preview reusable email templates. */
+    public Templates templates() {
+        return templates;
     }
 
     @Override

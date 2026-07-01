@@ -8,7 +8,7 @@ The Java SDK for the [SendByte](https://www.sendbyte.africa) transactional email
 - Typed exceptions mapped from the API's machine-readable error codes
 - Built-in webhook signature verification
 
-> Current coverage: the **Emails** resource (send, retrieve, list), the **Domains** resource (register, retrieve, list, verify), and webhook signature verification. API keys, templates, and webhook-endpoint management are structured to drop in as additional resources.
+> Current coverage: the **Emails** resource (send, retrieve, list), the **Domains** resource (register, retrieve, list, verify), the **Templates** resource (create, retrieve, list, update, delete, render, preview), and webhook signature verification. API keys and webhook-endpoint management are structured to drop in as additional resources.
 
 ## Installation
 
@@ -186,6 +186,55 @@ Domain one = client.domains().get(domain.getId());
 ```
 
 DNS propagation can take up to an hour; records that haven't propagated report `pass = false` in `verify(...).getChecks()`. SPF + DKIM passing is sufficient to reach `verified` (DMARC is recommended but optional).
+
+## Templates
+
+Create reusable server-side templates (Handlebars, or MJML compiled to responsive HTML), then send them by passing the template id or name as `templateId` on a send request.
+
+```java
+import africa.sendbyte.templates.Template;
+import africa.sendbyte.templates.TemplateRequest;
+import africa.sendbyte.templates.RenderedTemplate;
+import africa.sendbyte.templates.RenderRequest;
+import java.util.Collections;
+
+// Create
+Template tpl = client.templates().create(TemplateRequest.builder()
+        .name("welcome")
+        .subject("Welcome to PayLink, {{first_name}}!")
+        .html("<p>Hi {{first_name}}, your account is ready.</p>")
+        .text("Hi {{first_name}}, your account is ready.")
+        .build());
+
+// Preview a saved template against sample variables (nothing is sent)
+RenderedTemplate preview = client.templates().preview(tpl.getId(),
+        Collections.singletonMap("first_name", "Amaka"));
+System.out.println(preview.getSubject());   // "Welcome to PayLink, Amaka!"
+
+// Or render an unsaved body inline (e.g. a live editor preview)
+RenderedTemplate rendered = client.templates().render(RenderRequest.builder()
+        .subject("Hi {{first_name}}")
+        .html("<p>Hi {{first_name}}.</p>")
+        .variable("first_name", "Amaka")
+        .build());
+
+// Manage
+client.templates().list().getData().forEach(t -> System.out.println(t.getName()));
+client.templates().update(tpl.getId(), TemplateRequest.builder()
+        .name("welcome").subject("Welcome!").html("<p>Updated.</p>").build());
+client.templates().delete(tpl.getId());
+```
+
+Then send with it:
+
+```java
+client.emails().send(SendEmailRequest.builder()
+        .from("PayLink <receipts@paylink.ng>")
+        .to("amaka@halo.ng")
+        .templateId("welcome")               // id or name
+        .variable("first_name", "Amaka")
+        .build());
+```
 
 ## Error handling
 

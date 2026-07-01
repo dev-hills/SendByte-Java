@@ -8,7 +8,7 @@ The Java SDK for the [SendByte](https://www.sendbyte.africa) transactional email
 - Typed exceptions mapped from the API's machine-readable error codes
 - Built-in webhook signature verification
 
-> This first release covers the **Emails** resource (send, retrieve, list) plus webhook signature verification. Domains, API keys, templates, and webhook-endpoint management are structured to drop in as additional resources.
+> Current coverage: the **Emails** resource (send, retrieve, list), the **Domains** resource (register, retrieve, list, verify), and webhook signature verification. API keys, templates, and webhook-endpoint management are structured to drop in as additional resources.
 
 ## Installation
 
@@ -158,6 +158,34 @@ do {
             : null;
 } while (cursor != null);
 ```
+
+## Domains
+
+Register a sending domain, publish the returned DNS records at your provider, then verify to go live.
+
+```java
+import africa.sendbyte.domains.Domain;
+import africa.sendbyte.domains.DnsRecord;
+import africa.sendbyte.domains.DomainStatus;
+
+// 1. Register — returns the SPF, DKIM, and DMARC records to publish
+Domain domain = client.domains().create("paylink.ng");
+for (DnsRecord record : domain.getDnsRecords()) {
+    System.out.printf("%s  %s  %s%n", record.getType(), record.getHost(), record.getValue());
+}
+
+// 2. After publishing the records, trigger a live DNS check
+Domain checked = client.domains().verify(domain.getId());
+if (checked.status() == DomainStatus.VERIFIED) {
+    System.out.println("Ready for live sends.");
+}
+
+// List and fetch
+client.domains().list().getData().forEach(d -> System.out.println(d.getDomain()));
+Domain one = client.domains().get(domain.getId());
+```
+
+DNS propagation can take up to an hour; records that haven't propagated report `pass = false` in `verify(...).getChecks()`. SPF + DKIM passing is sufficient to reach `verified` (DMARC is recommended but optional).
 
 ## Error handling
 

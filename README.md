@@ -8,7 +8,7 @@ The Java SDK for the [SendByte](https://www.sendbyte.africa) transactional email
 - Typed exceptions mapped from the API's machine-readable error codes
 - Built-in webhook signature verification
 
-> Current coverage: the **Emails** resource (send, retrieve, list), the **Domains** resource (register, retrieve, list, verify), the **Templates** resource (create, retrieve, list, update, delete, render, preview), and webhook signature verification. API keys and webhook-endpoint management are structured to drop in as additional resources.
+> Current coverage: the **Emails** resource (send, retrieve, list), the **Domains** resource (register, retrieve, list, verify), the **Templates** resource (create, retrieve, list, update, delete, render, preview), the **Webhooks** resource (manage endpoints, deliveries, replay) plus signature verification. Only **API keys** remain to complete full API coverage.
 
 ## Installation
 
@@ -271,6 +271,33 @@ try {
 | `SendByteConnectionException` | — | (transport failure) |
 
 ## Webhooks
+
+### Manage endpoints
+
+Register endpoints, inspect delivery history, and replay past deliveries. The signing secret is returned **once** on create — store it to verify incoming requests.
+
+```java
+import africa.sendbyte.webhooks.WebhookEndpoint;
+import africa.sendbyte.webhooks.WebhookDelivery;
+import java.util.Arrays;
+
+// Subscribe to specific events (omit the list to receive all)
+WebhookEndpoint endpoint = client.webhooks().create(
+        "https://your-app.example.com/webhooks/sendbyte",
+        Arrays.asList("email.delivered", "email.bounced"));
+String secret = endpoint.getSecret();   // whsec_... — shown once, store it now
+
+// Inspect and recover deliveries
+client.webhooks().deliveries(endpoint.getId()).getData()
+        .forEach(d -> System.out.println(d.getEventType() + " -> " + d.getStatusCode()));
+WebhookDelivery replay = client.webhooks().replay("del_...");
+
+// List and disable
+client.webhooks().list().getData().forEach(e -> System.out.println(e.getUrl()));
+client.webhooks().disable(endpoint.getId());
+```
+
+### Verify signatures
 
 Verify the `sendbyte-signature` header against the **raw** request body — always before parsing JSON. The default 5-minute timestamp tolerance guards against replay attacks.
 

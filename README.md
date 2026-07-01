@@ -1,5 +1,7 @@
 # SendByte Java SDK
 
+[![CI](https://github.com/dev-hills/SendByte-Java/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-hills/SendByte-Java/actions/workflows/ci.yml)
+
 The Java SDK for the [SendByte](https://www.sendbyte.africa) transactional email API. Send emails, track their lifecycle, and verify webhooks from any JVM application.
 
 - **Java 8+**

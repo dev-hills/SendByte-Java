@@ -1,6 +1,8 @@
 # SendByte Java SDK
 
 [![CI](https://github.com/dev-hills/SendByte-Java/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-hills/SendByte-Java/actions/workflows/ci.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.dev-hills/sendbyte-java.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.dev-hills/sendbyte-java)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 The Java SDK for the [SendByte](https://www.sendbyte.africa) transactional email API. Send emails, track their lifecycle, and verify webhooks from any JVM application.
 
@@ -29,6 +31,8 @@ The Java SDK for the [SendByte](https://www.sendbyte.africa) transactional email
 ```groovy
 implementation 'io.github.dev-hills:sendbyte-java:0.1.0'
 ```
+
+Available on [Maven Central](https://central.sonatype.com/artifact/io.github.dev-hills/sendbyte-java).
 
 ## Quickstart
 
